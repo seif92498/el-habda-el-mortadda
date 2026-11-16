@@ -5,17 +5,352 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b7a3b">
 <title>الهبدة المرتدة ⚽</title>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css">
+<style>
+:root{--g1:#0b7a3b;--g2:#0e9c4c;--g3:#075c2c;--w:#f7fff9;--y:#ffd23f;--r:#e63946;--b:#1d77ef;--ink:#062b16;--shadow:0 10px 30px #0003}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:Cairo,Tajawal,system-ui,sans-serif;background:var(--g3);color:var(--ink)}
+.pitch{min-height:100dvh;padding:14px;padding-bottom:max(14px,env(safe-area-inset-bottom));background:repeating-linear-gradient(90deg,#ffffff08 0 8vw,#0000 8vw 16vw),radial-gradient(120% 80% at 50% 0%,var(--g2),var(--g1) 55%,var(--g3))}
+.wrap{max-width:1100px;margin:auto}
+h1,h2,h3{margin:0 0 10px;line-height:1.25}
+.title{font-size:clamp(30px,7vw,64px);font-weight:900;color:#fff;text-shadow:0 4px 0 #064d25,0 0 24px #ffd23f55}
+.title small{display:block;font-size:.38em;color:var(--y);letter-spacing:2px}
+.card{background:var(--w);border-radius:22px;padding:16px;box-shadow:var(--shadow);margin:12px 0;border:3px solid #fff}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+label{font-weight:700;font-size:14px;display:block;margin-bottom:4px}
+input,select,textarea{width:100%;font-family:inherit;font-size:17px;padding:12px 14px;border:2px solid #c9e7d4;border-radius:14px;background:#fff;color:var(--ink);outline:none}
+input:focus,select:focus{border-color:var(--g2)}
+.btn{font-family:inherit;font-weight:900;font-size:17px;cursor:pointer;border:0;border-radius:16px;padding:14px 18px;background:var(--g2);color:#fff;box-shadow:0 6px 0 var(--g3);transition:transform .08s,filter .15s;min-height:54px;flex:1}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--g3)}
+.btn.sec{background:#fff;color:var(--g3);box-shadow:0 6px 0 #c9e7d4}
+.btn.y{background:var(--y);color:#3a2c00;box-shadow:0 6px 0 #b89300}
+.btn.r{background:var(--r);box-shadow:0 6px 0 #8d1d27}
+.btn.b{background:var(--b);box-shadow:0 6px 0 #0d47a1}
+.btn[disabled]{opacity:.45;filter:grayscale(1);cursor:not-allowed}
+.btn.sm{font-size:14px;min-height:44px;padding:10px 12px;flex:0 1 auto}
+.code{font-size:clamp(46px,13vw,92px);font-weight:900;letter-spacing:12px;color:var(--g3);background:#fff;border:4px dashed var(--y);border-radius:20px;text-align:center;padding:8px;direction:ltr}
+.buzzer{width:100%;min-height:min(46dvh,340px);border-radius:28px;border:6px solid #fff;font-family:inherit;font-weight:900;font-size:clamp(26px,7vw,52px);color:#fff;cursor:pointer;box-shadow:0 12px 0 #0004,inset 0 0 40px #fff3;animation:pop .25s ease}
+.buzzer.locked{background:#8a938d !important;filter:grayscale(.85);cursor:not-allowed;box-shadow:none}
+.buzzer small{display:block;font-size:.42em;opacity:.9}
+.q{font-size:clamp(20px,3.6vw,34px);font-weight:700;line-height:1.7}
+.rev{font-size:clamp(38px,10vw,86px);font-weight:900;letter-spacing:.14em;color:var(--g3);text-align:center;direction:rtl;unicode-bidi:plaintext;word-break:break-word}
+.chip{display:inline-flex;gap:6px;align-items:center;background:#fff;border-radius:999px;padding:6px 12px;font-weight:800;font-size:14px;border:2px solid #d9f0e2}
+.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+.score{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.score li{display:flex;justify-content:space-between;align-items:center;background:#fff;border-radius:14px;padding:10px 14px;font-weight:800;border-inline-start:8px solid var(--c)}
+.score li b{font-size:24px;color:var(--g2)}
+.score li.off{opacity:.45}
+.timer{font-size:clamp(34px,8vw,64px);font-weight:900;text-align:center;color:#fff;background:var(--g3);border-radius:18px;padding:6px;border:3px solid var(--y)}
+.timer.danger{background:var(--r);animation:blink .5s infinite}
+.banner{background:var(--y);color:#3a2c00;border-radius:16px;padding:12px;text-align:center;font-weight:900;font-size:clamp(18px,4vw,30px);animation:pop .3s}
+.banner.red{background:var(--r);color:#fff}
+.banner.stop{background:repeating-linear-gradient(45deg,#b8002b 0 14px,#7d001d 14px 28px);color:#fff}
+img.media{width:100%;max-height:42dvh;object-fit:contain;border-radius:18px;background:#eef7f1}
+.hidden{display:none !important}
+.muted{opacity:.7;font-size:14px}
+.fx{position:fixed;inset:0;pointer-events:none;z-index:50;display:grid;place-items:center;overflow:hidden}
+.cardfx{font-size:clamp(60px,18vw,160px);animation:cardIn .9s ease both;border-radius:16px;padding:10px;background:#fff}
+@keyframes cardIn{0%{transform:translateY(-120%) rotate(-25deg) scale(.6)}60%{transform:translateY(0) rotate(8deg) scale(1.1)}100%{transform:rotate(0) scale(1);opacity:1}}
+@keyframes pop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes blink{50%{opacity:.55}}
+@keyframes scan{0%{transform:translateY(-100%)}100%{transform:translateY(100%)}}
+.varline{position:absolute;inset-inline:0;height:8px;background:#fff9;box-shadow:0 0 30px #fff;animation:scan 1.1s linear infinite}
+.varbox{background:#111;color:#fff;border:6px solid #fff;border-radius:20px;padding:18px;font-weight:900;font-size:clamp(18px,4vw,30px);text-align:center;max-width:92vw}
+.freeze{position:fixed;inset:0;background:radial-gradient(circle at 50% 50%,#bfe9ffcc,#2b8fd6cc);z-index:45;display:grid;place-items:center;font-size:clamp(40px,12vw,100px);animation:pop .2s}
+.confetti{position:absolute;width:10px;height:16px;top:-20px;animation:fall 2.4s linear infinite}
+@keyframes fall{to{transform:translateY(110dvh) rotate(720deg)}}
+.toast{position:fixed;bottom:18px;inset-inline:0;margin:auto;width:max-content;max-width:92vw;z-index:60;background:#062b16;color:#fff;padding:12px 20px;border-radius:999px;font-weight:800;box-shadow:var(--shadow);animation:pop .2s}
+@media(max-width:600px){.card{padding:12px;border-radius:18px}.btn{font-size:15px;padding:12px}}
+</style>
 </head>
 <body>
   <main id="app" class="pitch"></main>
   <div id="toast" class="toast" hidden></div>
   <div id="fx" class="fx" aria-hidden="true"></div>
 
-  <!-- لل-offline: نزّل الملف وبدّل السطر ده بـ assets/vendor/peerjs.min.js -->
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-  <script type="module" src="assets/js/app.js"></script>
+  <script type="module">
+    // نبدأ بملف util.js
+    const $  = (s, r = document) => r.querySelector(s);
+    const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+    const clone = o => (typeof structuredClone === 'function') ? structuredClone(o) : JSON.parse(JSON.stringify(o));
+    const uid = (n = 6) => Math.random().toString(36).slice(2, 2 + n).toUpperCase();
+    const CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const roomCode = () => Array.from({ length: 4 }, () => CHARS[Math.floor(Math.random() * CHARS.length)]).join('');
+    const reverseAr = w => Array.from(w ?? '').reverse().join('');
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+    const store = { get(k, d){ try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } }, set(k, v){ localStorage.setItem(k, JSON.stringify(v)); }, del(k){ localStorage.removeItem(k); } };
+    const SESSION = 'habda.session.v1', BANK = 'habda.bank.v1', STATE = 'habda.state.v1';
+    let tt;
+    function toast(msg, ms = 2200){ const t = $('#toast'); if(!t) return; t.textContent = msg; t.hidden = false; clearTimeout(tt); tt = setTimeout(() => t.hidden = true, ms); }
+    function imgTag(path, alt = 'صورة السؤال'){ if(!path) return ''; const p = `questions_images/${path}`.replace(/([^:]\/)\/+/g, '$1'); return `<img class="media" src="${esc(p)}" alt="${esc(alt)}" onerror="this.onerror=null;this.src='https://placehold.co/600x360/e9fbf0/0b7a3b?text=الصورة+غير+موجودة'">`; }
+    function fx(html, ms = 1000){ const box = $('#fx'); box.innerHTML = html; setTimeout(() => box.innerHTML = '', ms); }
+    function confetti(){ const colors = ['#ffd23f','#e63946','#1d77ef','#fff','#0e9c4c']; fx(Array.from({length: 70}, (_, i) => `<i class="confetti" style="left:${(i*7.3)%100}%;background:${colors[i%5]};animation-delay:${(i%14)*.13}s"></i>`).join(''), 3200); }
+
+    // نبدأ بملف audio.js
+    let ctx;
+    const ac = () => (ctx ??= new (window.AudioContext || window.webkitAudioContext)());
+    function tone(f, d, type = 'sine', vol = .18, delay = 0){ try{ const c = ac(), o = c.createOscillator(), g = c.createGain(), t = c.currentTime + delay; o.type = type; o.frequency.setValueAtTime(f, t); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.001, t + d); o.connect(g).connect(c.destination); o.start(t); o.stop(t + d); }catch{} }
+    function noise(d, vol = .12){ try{ const c = ac(), n = Math.floor(c.sampleRate * d), b = c.createBuffer(1, n, c.sampleRate); const a = b.getChannelData(0); for(let i=0;i<n;i++) a[i] = (Math.random()*2-1) * (1-i/n); const s = c.createBufferSource(), g = c.createGain(); s.buffer = b; g.gain.value = vol; s.connect(g).connect(c.destination); s.start(); }catch{} }
+    const Sfx = { unlock(){ try{ ac().resume(); }catch{} }, bell(){ tone(880,.13,'square',.22); tone(1320,.20,'square',.16,.07); }, correct(){ [523,659,784,1046].forEach((f,i)=>tone(f,.16,'triangle',.2,i*.08)); }, wrong(){ tone(190,.30,'sawtooth',.2); tone(140,.25,'sawtooth',.14,.1); }, card(){ tone(420,.10,'square',.15); }, whistle(){ tone(2100,.22,'square',.14); tone(2500,.22,'square',.14,.24); noise(.2,.06); }, applause(){ noise(1.4,.16); [660,880,990].forEach((f,i)=>tone(f,.3,'triangle',.1,i*.18)); }, varfx(){ [330,330,440].forEach((f,i)=>tone(f,.18,'square',.14,i*.22)); noise(.5,.05); }, timeout(){ tone(300,.4,'sine',.2); tone(220,.5,'sine',.18,.3); }, heart(){ tone(70,.12,'sine',.22); tone(60,.14,'sine',.18,.2); }, freeze(){ tone(1400,.25,'sine',.12); tone(900,.35,'sine',.1,.12); } };
+
+    // أسئلة افتراضية في حالة فشل السحب من JSON
+    const CATEGORIES = ['معلومات عامة','معلومات كورة','انتقالات لاعبين','صور لاعبين','صور فرق وشعارات','صور تشكيلة فريق','غني أغنية مصرية','كلمات معكوسة','وصف أفلام ومسلسلات'];
+    const ALL = 'كل الفئات';
+    const MINI = [
+      {id:'f001',category:'وصف أفلام ومسلسلات',question:'دكتور نفسي بيرجع للشغل بعد سنين ويدخل عالم أحلام وحبوب غامضة. إيه الفيلم؟',answer:'الفيل الأزرق',difficulty:'سهل'},
+      {id:'r001',category:'كلمات معكوسة',question:'اقرأ الكلمة المعكوسة دي:',word:'الاهرام',reverse:true,answer:'الاهرام',difficulty:'سهل'},
+      {id:'g001',category:'معلومات عامة',question:'أطول نهر في العالم؟',answer:'النيل',difficulty:'سهل'}
+    ];
+    let cache = null;
+    async function loadBank(){ if(cache) return cache; const overridden = store.get(BANK, null); if(Array.isArray(overridden) && overridden.length){ cache = overridden; return cache; } try{ const r = await fetch('questions.json'); if(!r.ok) throw 0; cache = await r.json(); }catch{ cache = MINI; toast('مستخدمن بنك اسئلة افتراضي (ممكن تضيف من الإدارة)'); } return cache; }
+    const getBank = () => cache ?? MINI;
+    function saveBank(list){ const clean = list.filter(q => q.id && q.category && q.question && (q.answer || q.word)); cache = clean; store.set(BANK, clean); return clean; }
+    function resetBank(){ store.del(BANK); cache = null; return loadBank(); }
+    function addOrEdit(q){ const list = clone(getBank()), i = list.findIndex(x => x.id === q.id); if(i >= 0) list[i] = q; else list.push(q); return saveBank(list); }
+    function remove(id){ return saveBank(getBank().filter(q => q.id !== id)); }
+    function upload(file){ return new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => { try{ const data = JSON.parse(fr.result); if(!Array.isArray(data)) throw new Error('الملف لازم يكون Array'); res(saveBank(data)); }catch(e){ rej(e); } }; fr.onerror = () => rej(new Error('مش قادر أقرا الملف')); fr.readAsText(file, 'utf-8'); }); }
+    function download(){ const url = URL.createObjectURL(new Blob([JSON.stringify(getBank(), null, 2)], {type:'application/json;charset=utf-8'})); const a = document.createElement('a'); a.href = url; a.download = 'questions.json'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); }
+    function publicCard(q, reveal = false, withOptions = false, options = null){ const c = clone(q); c.display = q.reverse ? reverseAr(q.word) : null; delete c.word; if(!reveal) delete c.answer; if(withOptions) c.options = options; else delete c.options; return c; }
+    function draw(bank, state){ const cat = state.settings.category; let pool = bank.filter(q => !state.used.includes(q.id) && (cat === ALL || q.category === cat)); if(!pool.length) pool = bank.filter(q => !state.used.includes(q.id)); if(!pool.length) return null; return pool[Math.floor(Math.random() * pool.length)]; }
+    function optionsFor(q, bank){ const same = bank.filter(x => x.id !== q.id && x.category === q.category && x.answer); const fallback = bank.filter(x => x.id !== q.id && x.answer); const src = [...new Map([...same, ...fallback].map(x => [x.answer, x])).values()]; const picks = src.sort(() => Math.random() - .5).slice(0, 3).map(x => x.answer); while(picks.length < 3) picks.push(`اختيار ${picks.length + 1}`); const all = [q.answer, ...picks].sort(() => Math.random() - .5); const options = all.map((text, i) => ({ id: 'o' + i, text })); return { options, correctId: options.find(o => o.text === q.answer).id }; }
+
+    // نبدأ بملف net.js
+    const HOST_ID = code => `habda-${code}`;
+    class Net {
+      constructor(h = {}){ this.h = h; this.peer = null; this.conns = new Map(); this.hostConn = null; this.code = null; this.role = null; this._tries = 0; }
+      _open(id){ return new Promise((res, rej) => { const P = window.Peer; if(!P) return rej(new Error('PeerJS مش محمّل')); const p = new P(id, { debug: 0 }); this.peer = p; p.on('open', res); p.on('error', rej); p.on('connection', c => this._wireHost(c)); }); }
+      async host(prefer){ let code = prefer || roomCode(); for(let i = 0; i < 6; i++){ try{ await this._open(HOST_ID(code)); break; }catch(e){ if(e?.type === 'unavailable-id' || /unavailable-id|taken/i.test(String(e))){ code = roomCode(); continue; } throw e; } } this.code = code; this.role = 'host'; return code; }
+      _wireHost(c){ c.on('open', () => { this.conns.set(c.peer, c); this.h.onJoin?.(c); }); c.on('data', m => this.h.onMsg?.(m, c)); c.on('close', () => { this.conns.delete(c.peer); this.h.onLeave?.(c); }); c.on('error', () => {}); }
+      async join(code, meta){ if(!window.Peer) throw new Error('PeerJS مش محمّل'); this.code = code.toUpperCase().trim(); this.role = 'client'; this.meta = meta; await this._open(`habda-${code}-${uid(6)}`); this._connect(); }
+      _connect(){ const c = this.peer.connect(HOST_ID(this.code), { metadata: this.meta, reliable: true }); this.hostConn = c; c.on('open', () => { this._tries = 0; this.h.onOpen?.(); c.send({ type:'JOIN', ...this.meta, t: Date.now() }); }); c.on('data', m => this.h.onMsg?.(m, c)); c.on('close', () => { this.h.onClose?.(); if(this._tries++ < 25) setTimeout(() => this._connect(), 1500); }); c.on('error', () => toast('المضيف مش متاح.. بحاول تاني')); }
+      send(m){ if(this.hostConn?.open) this.hostConn.send(m); }
+      broadcast(m){ for(const c of this.conns.values()) if(c.open) c.send(m); }
+      destroy(){ try{ this.peer?.destroy(); }catch{} }
+    }
+
+    // نبدأ بملف game.js
+    const COLORS = ['#e63946','#1d77ef','#f4a261','#8e44ad'];
+    const freshPlayer = (name, color, key) => ({ key, name, color, points:0, correct:0, yellow:0, red:0, captainUsed:false, freezeUsed:false, captainArmed:false, suspendedUntilQ:-1, frozenUntil:0, connected:true });
+    class Host {
+      constructor({ net, bank, settings, mode, hostPlayer, onState, onFx }){
+        this.net = net; this.bank = bank; this.mode = mode; this.onState = onState; this.onFx = onFx; this.peerKeys = new Map();
+        const saved = store.get(STATE + settings.code, null); this.s = (saved && saved.code === settings.code && saved.players?.length) ? saved : this._fresh(settings, hostPlayer);
+        net.h.onJoin = c => this._hello(c); net.h.onLeave = c => this._bye(c); net.h.onMsg = (m, c) => this.intent(m, c);
+        this._interval = setInterval(() => this._tick(), 200); this.emit();
+      }
+      _fresh(st, hp){ const players = this.mode === 'auto' && hp ? [freshPlayer(hp.name, hp.color, hp.key)] : []; return { code: st.code, mode: this.mode, settings: { points:+st.points||1, timer:+st.timer||20, rounds:+st.rounds||12, category:st.category }, players, qIndex:0, used:[], current:null, options:null, secretCorrectId:null, phase:'lobby', answerShown:false, activeKey:null, wrongKeys:[], taps:[], varOpen:false, lockedAt:0, deadline:0, remainingMs:0, paused:false, history:[], lastEvent:'يلا نبدأ 🎺' }; }
+      _hello(c){ c.on('data', () => {}); }
+      _bye(c){ const k = this.peerKeys.get(c.peer); const p = this.get(k); if(p){ p.connected = false; this.emit(); } this.peerKeys.delete(c.peer); }
+      get(key){ return this.s.players.find(p => p.key === key); }
+      _join(m, c){ const key = m.key || `${m.name}|${m.color}`; let p = this.get(key); if(!p){ if(this.s.players.length >= 4){ c.send({type:'FULL'}); return; } const taken = this.s.players.some(x => x.color === m.color); p = freshPlayer(m.name || 'لاعب', taken ? (COLORS.find(cl => !this.s.players.some(x=>x.color===cl)) || COLORS[0]) : m.color, key); this.s.players.push(p); } p.name = m.name || p.name; p.connected = true; this.peerKeys.set(c.peer, key); this.s.lastEvent = `${p.name} دخل الغرفة 👋`; this.emit(); c.send({ type:'SYNC', hostNow: Date.now(), deadline: this.s.deadline }); }
+      intent(m, c){ if(m.type === 'JOIN') return this._join(m, c); const key = this.peerKeys.get(c.peer) || m.key; const p = this.get(key); if(!p) return; switch(m.type){ case 'BUZZ': return this.buzz(m, key, p); case 'CAPTAIN': return this.armCaptain(p); case 'FREEZE': return this.freeze(p, m.target); case 'MCQ': return this.answerMcq(p, m.optionId); case 'PING': return c.send({type:'SYNC',hostNow:Date.now(),deadline:this.s.deadline}); } }
+      buzz(m, key, p){ const now = Date.now(); if(this.s.phase === 'locked' && now - this.s.lockedAt < 300){ if(!this.s.taps.some(t => t.key === key)) this.s.taps.push({ key, name:p.name, color:p.color, t:Math.min(+m.t||now, now), recv:now }); return this.emit(); } if(this.s.phase !== 'question' || this.s.paused) return; if(this.s.wrongKeys.includes(key)) return; if(p.suspendedUntilQ >= this.s.qIndex) return; if(p.frozenUntil > now) return; if(this.s.taps.some(t => t.key === key)) return; this.s.taps.push({ key, name:p.name, color:p.color, t:Math.min(+m.t||now, now), recv:now }); const eligible = this.s.taps.filter(t => !this.s.wrongKeys.includes(t.key)).sort((a,b) => a.t - b.t || a.recv - b.recv); if(eligible.length && !this.s.activeKey){ const w = eligible[0]; this.push(); this.s.activeKey = w.key; this.s.phase = 'locked'; this.s.paused = true; this.s.lockedAt = now; this.s.remainingMs = Math.max(0, this.s.deadline - now); this.s.lastEvent = `${w.name} داس الأول ⚡`; this.fx('bell'); this.emit(); } }
+      judge(ok){ if(this.s.phase !== 'locked') return; this.push(); const p = this.get(this.s.activeKey); if(!p) return; const counter = this.s.wrongKeys.length > 0; const stop = this.isStoppage(); if(ok){ const mult = (counter?2:1) * (p.captainArmed?2:1) * (stop?2:1); p.points += this.s.settings.points * mult; p.correct++; this.s.lastEvent = counter ? `هبدة مرتدة! ${p.name} خد +${this.s.settings.points*mult} 🔄⚽` : `${p.name} صح! +${this.s.settings.points*mult} ✅`; this.s.answerShown = true; this.s.phase = 'reveal'; this.fx('correct'); }else{ if(p.captainArmed) p.points -= 1; this.s.wrongKeys.push(p.key); this.s.lastEvent = `${p.name} غلط.. الجرس اتفتح تاني للي فاضل! ❌`; this.s.phase = 'question'; this.s.paused = false; this.s.activeKey = null; this.s.deadline = Date.now() + this.s.remainingMs; this.fx('wrong'); } p.captainArmed = false; this.emit(); this.net.broadcast({type:'SYNC',hostNow:Date.now(),deadline:this.s.deadline}); }
+      answerMcq(p, id){ if(this.mode !== 'auto' || p.key !== this.s.activeKey) return; this.judge(id === this.s.secretCorrectId); setTimeout(() => { if(this.s.phase === 'reveal') this.next(); }, 1400); }
+      card(key, type){ const p = this.get(key); if(!p) return; this.push(); if(type === 'yellow'){ p.points -= 1; p.yellow++; this.s.lastEvent = `كرت أصفر لـ ${p.name} 🟨`; this.fx('yellow'); if(p.yellow >= 2){ p.yellow -= 2; p.red++; p.points -= 3; p.suspendedUntilQ = this.s.qIndex + 1; this.s.lastEvent = `طرد! ${p.name} موقوف السؤال الجاي 🟥`; this.fx('red'); } }else{ p.red++; p.points -= 3; p.suspendedUntilQ = this.s.qIndex + 1; this.s.lastEvent = `كرت أحمر لـ ${p.name} 🟥 (موقوف سؤال)`; this.fx('red'); } this.emit(); }
+      armCaptain(p){ if(p.captainUsed || this.s.phase !== 'question' || this.s.activeKey) return; this.push(); p.captainUsed = true; p.captainArmed = true; this.s.lastEvent = `${p.name} فعّل كابتن الفريق 🧢 (صح = ضعف / غلط = -1)`; this.emit(); }
+      freeze(p, target){ if(p.freezeUsed || this.s.phase !== 'question' || !target || target === p.key) return; const t = this.get(target); if(!t) return; this.push(); p.freezeUsed = true; t.frozenUntil = Date.now() + 3000; this.s.lastEvent = `${p.name} جمّد ${t.name} 3 ثواني ❄️`; this.fx('freeze', { target }); this.emit(); setTimeout(() => this.emit(), 3100); }
+      undo(){ if(!this.s.history.length) return toast('مفيش حاجة أتراجع عنها'); this.s = this.s.history.pop(); this.s.lastEvent = 'تراجع الحكم ↩️'; this.emit(); }
+      push(){ this.s.history.push(clone(this.s)); if(this.s.history.length > 30) this.s.history.shift(); }
+      start(){ if(!this.s.players.length) return toast('لسه مفيش لاعبين'); this.s.qIndex = 0; this.s.used = []; this.s.players.forEach(p => { p.points=0;p.correct=0;p.yellow=0;p.red=0;p.captainUsed=false;p.freezeUsed=false; p.captainArmed=false;p.suspendedUntilQ=-1; }); this.next(); }
+      next(){ if(this.s.qIndex >= this.s.settings.rounds) return this.finish(); const q = draw(this.bank, this.s); if(!q) return this.finish(); this.push(); this.s.current = q; this.s.used.push(q.id); this.s.qIndex++; this.s.phase='question'; this.s.answerShown=false; this.s.activeKey=null; this.s.wrongKeys=[]; this.s.taps=[]; this.s.varOpen=false; this.s.paused=false; this.s.deadline = Date.now() + this.s.settings.timer*1000; this.s.players.forEach(p => p.captainArmed = false); if(this.mode === 'auto'){ const o = optionsFor(q, this.bank); this.s.options = o.options; this.s.secretCorrectId = o.correctId; }else{ this.s.options = null; this.s.secretCorrectId = null; } this.s.lastEvent = this.isStoppage() ? '⏱️ +90 وقت بدل ضائع.. كل صح بضعف!' : `السؤال ${this.s.qIndex}`; this.fx('question'); this.emit(); this.net.broadcast({type:'SYNC',hostNow:Date.now(),deadline:this.s.deadline}); }
+      reveal(){ this.push(); this.s.answerShown = true; this.emit(); }
+      reopen(){ if(this.s.phase === 'results') return; this.push(); this.s.phase='question'; this.s.paused=false; this.s.activeKey=null; this.s.wrongKeys=[]; this.s.taps=[]; this.s.deadline = Date.now() + this.s.remainingMs; this.s.lastEvent = 'الحكم فتح الجرس من تاني 🔓'; this.emit(); this.net.broadcast({type:'SYNC',hostNow:Date.now(),deadline:this.s.deadline}); }
+      varReview(){ this.push(); this.s.varOpen = true; this.s.lastEvent = '📺 مراجعة الفار..'; this.fx('var'); this.emit(); setTimeout(() => { this.s.varOpen = false; this.emit(); }, 4200); }
+      finish(){ this.push(); this.s.phase='results'; this.s.answerShown=true; this.s.paused=true; this.fx('win'); this.emit(); }
+      isStoppage(){ return this.s.settings.rounds - this.s.qIndex + 1 <= 3 && this.s.qIndex > 0; }
+      _tick(){ if(this.s.phase === 'question' && !this.s.paused && this.s.deadline && Date.now() >= this.s.deadline){ this.push(); this.s.phase='timeout'; this.s.answerShown=true; this.s.paused=true; this.s.lastEvent = 'الوقت خلص ⏰'; this.fx('timeout'); this.emit(); if(this.mode === 'auto') setTimeout(() => { if(this.s.phase==='timeout') this.next(); }, 1600); } }
+      emit(){ store.set(STATE + this.s.code, this.s); this.net.broadcast({ type:'STATE', state: this.public() }); this.onState?.(this.s); }
+      public(){ const s = clone(this.s); delete s.history; delete s.secretCorrectId; if(s.current){ const reveal = s.answerShown || s.phase==='timeout' || s.phase==='results'; s.current = publicCard(this.s.current, reveal, this.mode==='auto', s.options); } if(!s.varOpen) s.taps = s.taps.map(t => ({ key:t.key, name:t.name, color:t.color })); return s; }
+      fx(name, payload = {}){ this.net.broadcast({ type:'FX', name, payload }); this.onFx?.({ name, payload }); }
+    }
+
+    class Client {
+      constructor(net, session, { onState, onFx }){ this.net = net; this.session = session; this.state = null; this.offset = 0; this.deadline = 0; this.onState = onState; this.onFx = onFx; net.h.onMsg = m => { if(m.type === 'SYNC'){ this.offset = m.hostNow - Date.now(); this.deadline = m.deadline; } if(m.type === 'STATE'){ this.state = m.state; this.onState?.(m.state); } if(m.type === 'FX') this.onFx?.(m); if(m.type === 'FULL') toast('الغرفة مليانة (4 لاعبين) 😅'); }; net.h.onClose = () => toast('اتقطعت.. برجّعك تاني بنفس الدرجة 🔁'); net.h.onOpen = () => toast('رجعت للغرفة ✅'); }
+      send(o){ this.net.send({ ...o, t: Date.now() + this.offset, key: this.session.key }); }
+      remaining(){ if(!this.deadline) return 0; return Math.max(0, this.deadline - (Date.now() + this.offset)); }
+      me(){ return this.state?.players.find(p => p.key === this.session.key); }
+    }
+
+    // نبدأ بملف app.js
+    const A = { net:null, host:null, client:null, session:null, state:null, mode:'referee' };
+    const app = $('#app');
+    const render = html => { app.innerHTML = `<div class="wrap">${html}</div>`; };
+    const go = h => { location.hash = h; };
+    const link = `${location.origin}${location.pathname}?room=`;
+
+    function playFx({ name, payload = {} }){
+      Sfx.unlock();
+      const map = { bell:['bell', `<div class="banner">🔔 داس الأول!</div>`, 900], correct:['correct', `<div class="banner">✅ صح!</div>`, 900], wrong:['wrong', `<div class="banner red">❌ غلط.. الجرس اتفتح!</div>`, 900], yellow:['card', `<div class="cardfx">🟨</div>`, 950], red:['whistle', `<div class="cardfx">🟥</div>`, 1000], timeout:['timeout', `<div class="banner red">⏰ الوقت خلص!</div>`, 1100], question:['heart', '', 10], varfx:['varfx', '', 10], freeze:['freeze', '', 10], win:['applause', '', 10] };
+      if(name === 'var'){ Sfx.varfx(); const s = A.state; const taps = (s?.taps || []).filter(t => t.t).sort((a,b) => a.t - b.t); const lines = taps.length > 1 ? taps.slice(1).map((t,i) => `${esc(taps[i].name)} سبق ${esc(t.name)} بـ <b>${((t.t-taps[i].t)/1000).toFixed(2)}</b> ثانية`).join('<br>') : 'مفيش دسات متسجلة'; fx(`<div class="varline"></div><div class="varbox">📺 مراجعة الفار<br><span style="font-size:.7em">${lines}</span></div>`, 4300); return; }
+      if(name === 'freeze'){ const me = A.client?.me(); if(me && payload.target === me.key) fx(`<div class="freeze">❄️ اتجمّدت 3 ثواني!</div>`, 3000); return; }
+      if(name === 'win'){ confetti(); return; }
+      const [snd, html, ms] = map[name] || ['', '', 10]; if(snd) Sfx[snd]?.(); if(html) fx(html, ms);
+    }
+
+    const scoreboard = (s, mini = false) => `<ol class="score">${[...(s?.players||[])].sort((a,b)=>b.points-a.points).map((p,i)=>`<li style="--c:${esc(p.color)};${mini?'font-size:13px;padding:6px 10px':''}"><span>${i+1}. ${esc(p.name)} ${p.connected===false?'📴':''} ${p.suspendedUntilQ>=s?.qIndex?'🟥':''}</span><span><b>${p.points}</b> <small>✅${p.correct} 🟨${p.yellow} 🟥${p.red}</small></span></li>`).join('') || '<li>لسه مفيش لاعبين..</li>'}</ol>`;
+
+    const questionCard = (s, isHost) => {
+      const q = s?.current; if(!q) return `<div class="card q">مستني الحكم يبدأ الماتش ⚽</div>`;
+      return `<div class="card"><div class="row" style="justify-content:space-between"><span class="chip">${esc(q.category)}</span><span class="chip">${esc(q.difficulty||'—')}</span>${s.settings.rounds - s.qIndex + 1 <= 3 ? '<span class="chip" style="background:#b8002b;color:#fff">+90 وقت بدل ضائع 🔥</span>' : ''}</div><p class="q">${esc(q.question)}</p>${q.display ? `<div class="rev">${esc(q.display)}</div>` : ''}${q.image ? imgTag(q.image) : ''}${isHost || q.answer ? `<div class="banner" style="margin-top:10px">💡 الإجابة: ${esc(isHost ? s.current.answer : q.answer)}</div>` : ''}${q.options && s.phase==='locked' && s.activeKey===A.session?.key ? `<div class="grid" style="margin-top:12px">${q.options.map(o=>`<button class="btn sec" data-act="mcq" data-id="${esc(o.id)}">${esc(o.text)}</button>`).join('')}</div>` : ''}</div>`;
+    };
+    const timerBox = () => `<div class="timer" id="timer">--</div>`;
+
+    function startScreen(){
+      const saved = store.get(SESSION, {});
+      render(`<div class="card" style="text-align:center;background:linear-gradient(160deg,#fff,#e9fbf0)"><h1 class="title">الهبدة المرتدة <small>⚽ EL-HABDA EL-MORTADDA ⚽</small></h1><p class="q">٤ لاعبين.. كل واحد على موبايله.. وأول ما تدس، الكل يتقفل 🔔</p></div><div class="card"><h2>اختار الوضع</h2><div class="row"><button class="btn" data-act="mode" data-v="referee">🧑‍⚖️ بحكم بشري</button><button class="btn b" data-act="mode" data-v="auto">🤖 بدون حكم (4 لاعبين)</button></div><div class="grid" style="margin-top:14px"><div><label>اسمك</label><input id="name" value="${esc(saved.name||'')}" placeholder="مثلاً: كريم"></div><div><label>لونك</label><select id="color">${COLORS.map((c,i)=>`<option value="${c}" ${saved.color===c?'selected':''}>${['أحمر 🔴','أزرق 🔵','برتقالي 🟠','بنفسجي 🟣'][i]}</option>`).join('')}</select></div><div><label>عدد الأسئلة</label><input id="rounds" type="number" min="3" max="60" value="12"></div><div><label>العدّاد (ثانية)</label><input id="timer" type="number" min="5" max="90" value="20"></div><div><label>نقطة الصح</label><input id="points" type="number" min="1" max="5" value="1"></div><div><label>الفئة</label><select id="cat"><option>${ALL}</option>${CATEGORIES.map(c=>`<option>${esc(c)}</option>`).join('')}</select></div></div></div><div class="card"><h2>اعمل غرفة 🏟️</h2><div class="row"><button class="btn" data-act="create">اعمل غرفة وخد الكود</button></div><h2 style="margin-top:18px">أو ادخل غرفة موجودة 🔑</h2><div class="row"><input id="code" maxlength="4" style="max-width:180px;text-transform:uppercase;letter-spacing:8px;font-weight:900" placeholder="ABCD"><button class="btn sec" data-act="join">ادخل يا كابتن</button></div><div class="row" style="margin-top:16px"><button class="btn sm y" data-act="manage">📚 إدارة الأسئلة</button><button class="btn sm sec" data-act="how">❗ إزاي تشغّله</button></div></div>`);
+      A.mode = 'referee';
+    }
+    function lobbyHost(s){ render(`<div class="card" style="text-align:center"><h2>كود الغرفة 📡</h2><div class="code" id="roomcode">${esc(s.code)}</div><p class="muted">ابعته للـ 4 لاعبين (أو افتح الرابط ده على موبايلاتهم)</p><div class="row"><input id="invite" readonly value="${esc(link + s.code)}" dir="ltr"><button class="btn sm sec" data-act="copy">📋 انسخ</button></div></div><div class="card"><h2>اللي دخلوا (${s.players.length}/4)</h2>${scoreboard(s)}<div class="banner">${esc(s.lastEvent||'مستنين اللاعبين..')}</div><div class="row" style="margin-top:12px"><button class="btn" data-act="begin" ${s.players.length?'':'disabled'}>⚽ ابدأ الماتش</button><button class="btn sm sec" data-act="manage">📚 الأسئلة</button></div></div>`); }
+    function lobbyClient(s){ render(`<div class="card" style="text-align:center"><h1 class="title" style="font-size:34px">${esc(A.session.name)} 👋</h1><div class="banner">دخلت غرفة <b dir="ltr">${esc(s.code)}</b>.. مستني الحكم يبدأ ⏳</div><p class="muted">لو قفل الموبايل ورجعت، درجتك وكروتك هتفضل محفوظة 🔁</p></div><div class="card"><h2>اللي في الغرفة</h2>${scoreboard(s, true)}</div>`); }
+    function hostScreen(s){
+      const active = s.players.find(p => p.key === s.activeKey);
+      render(`<div class="row" style="justify-content:space-between"><span class="chip">🏟️ ${esc(s.code)}</span><span class="chip">سؤال ${s.qIndex} / ${s.settings.rounds}</span><span class="chip">${s.mode==='auto'?'🤖 أوتو':'🧑‍⚖️ حكم'}</span></div>${timerBox()}${active ? `<div class="banner" style="background:${esc(active.color)};color:#fff">🎤 ${esc(active.name)} بيجاوب دلوقتي!</div>` : `<div class="banner">${esc(s.lastEvent||'الجرس مفتوح 🔔')}</div>`}<div class="grid" style="grid-template-columns:minmax(0,2fr) minmax(240px,1fr)"><div>${questionCard(s, true)}</div><div class="card"><h2>الترتيب 📊</h2>${scoreboard(s)}</div></div><div class="card"><h2>لوحة الحكم 🧑‍⚖️</h2><div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr))">${s.mode==='referee' ? `<button class="btn" data-act="correct" ${s.phase!=='locked'?'disabled':''}>✅ إجابة صح</button><button class="btn r" data-act="wrong" ${s.phase!=='locked'?'disabled':''}>❌ إجابة غلط</button><button class="btn sec" data-act="reveal">💡 إظهار الإجابة</button><button class="btn sec" data-act="reopen">🔓 إعادة فتح الجرس</button>` : ''}<button class="btn b" data-act="next">➡️ السؤال اللي بعده</button><button class="btn y" data-act="var">📺 فار VAR</button><button class="btn sec" data-act="undo">↩️ تراجع</button><button class="btn sec" data-act="finish">🏁 النتيجة</button></div><h3 style="margin-top:16px">الكروت 🟨🟥 (داس على اسم اللاعب)</h3><div class="row">${s.players.map(p=>`<button class="btn sm y" data-act="yellow" data-k="${esc(p.key)}">🟨 ${esc(p.name)}</button><button class="btn sm r" data-act="red" data-k="${esc(p.key)}">🟥 ${esc(p.name)}</button>`).join('')}</div></div>`);
+    }
+    function playerScreen(s){
+      const me = A.client?.me() || { name:A.session.name, color:A.session.color, points:0 };
+      const locked = s.phase !== 'question' || s.activeKey;
+      const iAmOut = s.wrongKeys?.includes(A.session.key) || me.suspendedUntilQ >= s.qIndex || me.frozenUntil > Date.now() + (A.client?.offset||0);
+      const disabled = locked || iAmOut;
+      const winner = s.players.find(p => p.key === s.activeKey);
+      render(`<div class="row" style="justify-content:space-between"><span class="chip"><i class="dot" style="background:${esc(me.color)}"></i> ${esc(me.name)}</span><span class="chip">سؤال ${s.qIndex}/${s.settings.rounds}</span><span class="chip"><b>${me.points}</b> نقطة</span></div>${timerBox()}${winner ? `<div class="banner" style="background:${esc(winner.color)};color:#fff">اتقفل! ${esc(winner.name)} داس الأول 🔒</div>` : ''}${s.settings.rounds - s.qIndex + 1 <= 3 ? '<div class="banner stop">⏱️ +90 وقت بدل ضائع.. الصح بضعف! 🔥</div>' : ''}${questionCard(s, false)}${s.varOpen ? `<div class="varbox" style="margin:10px auto">📺 الفار شغال..</div>` : ''}<button class="buzzer ${disabled?'locked':''}" data-act="buzz" ${disabled?'disabled':''} style="background:${esc(me.color)}">${disabled ? '🔒 اتقفل!' : '🔔 داس يا كابتن!'}<small>${esc(me.name)}</small></button><div class="row" style="margin-top:12px"><button class="btn y" data-act="captain" ${me.captainUsed||s.phase!=='question'?'disabled':''}>🧢 كابتن الفريق ${me.captainUsed?'(خلص)':'(ضعف النقاط)'}</button><button class="btn b" data-act="freeze" ${me.freezeUsed||s.phase!=='question'?'disabled':''}>❄️ تثبيت ${me.freezeUsed?'(خلص)':''}</button></div><div id="freezePick" class="hidden card"><h3>جمّد مين؟ 🤔</h3><div class="row">${s.players.filter(p=>p.key!==A.session.key).map(p=>`<button class="btn sm sec" data-act="freezeGo" data-k="${esc(p.key)}">${esc(p.name)}</button>`).join('')}</div></div><div class="card"><h3>الترتيب 📊</h3>${scoreboard(s, true)}</div>`);
+    }
+    function resultsScreen(s){
+      const rank = [...s.players].sort((a,b)=>b.points-a.points);
+      const w = rank[0];
+      render(`<div class="card" style="text-align:center"><h1 class="title">🏆 ${esc(w?.name||'—')} كسب الماتش! <small>الهبدة المرتدة ⚽</small></h1><div class="banner" style="background:${esc(w?.color||'#0b7a3b')};color:#fff">${w?.points??0} نقطة 🎉</div></div><div class="card"><h2>الترتيب النهائي</h2><ol class="score">${rank.map((p,i)=>`<li style="--c:${esc(p.color)}"><span>${['🥇','🥈','🥉','4️⃣'][i]} ${esc(p.name)}</span><span><b>${p.points}</b> ✅${p.correct} 🟨${p.yellow} 🟥${p.red}</span></li>`).join('')}</ol></div><div class="row"><button class="btn" data-act="again">🔄 العب تاني</button><button class="btn sec" data-act="home">🏠 الرئيسية</button></div>`);
+      confetti(); Sfx.applause();
+    }
+    async function manageScreen(edit = null){
+      const bank = await loadBank();
+      const q = edit || { id:'', category:CATEGORIES[0], question:'', word:'', answer:'', reverse:false, image:'', difficulty:'سهل' };
+      render(`<div class="card"><div class="row" style="justify-content:space-between"><h2>📚 إدارة الأسئلة (${bank.length})</h2><button class="btn sm sec" data-act="home">🏠 رجوع</button></div><div class="row"><button class="btn sm" data-act="download">⬇️ نزّل JSON</button><label class="btn sm b" style="text-align:center">⬆️ ارفع JSON<input type="file" id="upload" accept=".json,application/json" hidden></label><button class="btn sm r" data-act="resetBank">♻️ رجّع الأصل</button></div></div><div class="card"><h3>${edit?'✏️ تعديل':'➕ سؤال جديد'}</h3><div class="grid"><div><label>ID (مطابق لاسم الصورة)</label><input id="q_id" value="${esc(q.id)}" placeholder="p001"></div><div><label>الفئة</label><select id="q_cat">${CATEGORIES.map(c=>`<option ${q.category===c?'selected':''}>${esc(c)}</option>`).join('')}</select></div><div><label>الصعوبة</label><select id="q_diff">${['سهل','متوسط','صعب'].map(d=>`<option ${q.difficulty===d?'selected':''}>${d}</option>`).join('')}</select></div><div><label>مسار الصورة (داخل questions_images)</label><input id="q_img" value="${esc(q.image||'')}" placeholder="players/p001.jpg"></div></div><div style="margin-top:10px"><label>نص السؤال</label><textarea id="q_text" rows="2">${esc(q.question)}</textarea></div><div class="grid" style="margin-top:10px"><div><label>الإجابة (للحكم بس)</label><input id="q_ans" value="${esc(q.answer||'')}"></div><div><label>الكلمة الأصلية (للمعكوس)</label><input id="q_word" value="${esc(q.word||'')}"></div><div><label>معكوس؟</label><select id="q_rev"><option value="0" ${!q.reverse?'selected':''}>لا</option><option value="1" ${q.reverse?'selected':''}>أيوه 🔠</option></select></div></div><div class="row" style="margin-top:12px"><button class="btn" data-act="saveQ">💾 حفظ</button>${edit?'<button class="btn sec" data-act="cancelEdit">إلغاء</button>':''}</div></div><div class="card"><h3>كل الأسئلة</h3><div style="max-height:46dvh;overflow:auto"><table style="width:100%;border-collapse:collapse;font-size:14px"><thead><tr><th>ID</th><th>الفئة</th><th>السؤال</th><th>الإجابة</th><th></th></tr></thead><tbody>${bank.map(x=>`<tr style="border-top:1px solid #ddd"><td dir="ltr">${esc(x.id)}</td><td>${esc(x.category)}</td><td>${esc(x.question).slice(0,60)}…</td><td>${esc(x.answer||x.word)}</td><td style="white-space:nowrap"><button class="btn sm sec" data-act="editQ" data-id="${esc(x.id)}">✏️</button><button class="btn sm r" data-act="delQ" data-id="${esc(x.id)}">🗑️</button></td></tr>`).join('')}</tbody></table></div></div>`);
+    }
+
+    function route(){
+      const s = A.state;
+      if(location.hash.startsWith('#/manage')) return manageScreen();
+      if(!s) return startScreen();
+      if(s.phase === 'results') return resultsScreen(s);
+      if(A.host) return s.phase === 'lobby' ? lobbyHost(s) : hostScreen(s);
+      return s.phase === 'lobby' ? lobbyClient(s) : playerScreen(s);
+    }
+
+    function onState(s){ A.state = A.host ? s : s; route(); if(A.host && s.phase !== 'lobby' && s.phase !== 'results') tickTimer(s); }
+
+    function tickTimer(){
+      const el = $('#timer'); if(!el) return; clearInterval(A.tickId);
+      const draw = () => {
+        const s = A.state; if(!s) return;
+        const ms = s.paused ? (s.remainingMs || 0) : Math.max(0, s.deadline - Date.now());
+        const node = $('#timer'); if(!node) return clearInterval(A.tickId);
+        node.textContent = (ms/1000).toFixed(1) + ' ث';
+        node.classList.toggle('danger', ms > 0 && ms < 5000);
+      };
+      draw(); A.tickId = setInterval(draw, 100);
+    }
+
+    document.addEventListener('click', async e => {
+      const b = e.target.closest('[data-act]'); if(!b) return;
+      Sfx.unlock();
+      const act = b.dataset.act, v = b.dataset.v, k = b.dataset.k;
+
+      if(act === 'mode'){ A.mode = v; $$('[data-act="mode"]').forEach(x => x.classList.toggle('sec', x.dataset.v !== v)); toast(v === 'auto' ? 'وضع الأوتو: الـ MCQ هيظهر تلقائي 🤖' : 'وضع الحكم البشري 🧑‍⚖️'); return; }
+      if(act === 'how') return toast('شغّله بـ: npx serve .  وافتح الرابط على كل الموبايلات');
+      if(act === 'manage') return go('#/manage');
+      if(act === 'home'){ A.net?.destroy(); A.net=null; A.host=null; A.client=null; A.state=null; store.del(SESSION); return go('#/'); }
+      if(act === 'copy'){
+        const url = $('#invite').value;
+        if(navigator.share){ try{ return await navigator.share({ title:'الهبدة المرتدة ⚽', text:'ادخل الغرفة يلا!', url }); }catch{} }
+        await navigator.clipboard?.writeText(url);
+        return toast('اتنسخ 📋 ابعته للـ 4 لاعبين');
+      }
+
+      if(act === 'create'){
+        const name = $('#name').value.trim() || 'الحكم';
+        const st = { code: roomCode(), rounds:+$('#rounds').value, timer:+$('#timer').value, points:+$('#points').value, category:$('#cat').value };
+        const ses = { code:st.code, key:`host|${name}`, name, color:$('#color').value, role:'host', mode:A.mode };
+        store.set(SESSION, ses); A.session = ses; A.mode = ses.mode;
+        try{
+          A.net = new Net();
+          st.code = await A.net.host(st.code);
+          ses.code = st.code; store.set(SESSION, ses);
+          const bank = await loadBank();
+          A.host = new Host({ net:A.net, bank, settings:st, mode:A.mode, hostPlayer: A.mode==='auto' ? { name, color:ses.color, key:ses.key } : null, onState, onFx: playFx });
+          go('#/host');
+        }catch(err){ toast('❌ ' + err.message); }
+        return;
+      }
+
+      if(act === 'join'){
+        const code = $('#code').value.trim().toUpperCase();
+        if(code.length !== 4) return toast('الكود 4 حروف يا كابتن 🔑');
+        const name = $('#name').value.trim() || 'لاعب';
+        const ses = { code, key:`${name}|${$('#color').value}`, name, color:$('#color').value, role:'player' };
+        store.set(SESSION, ses); A.session = ses;
+        try{
+          A.net = new Net();
+          A.client = new Client(A.net, ses, { onState, onFx: playFx });
+          await A.net.join(code, ses);
+          go('#/play'); toast('دخلت.. مستني الحكم 👋');
+        }catch(err){ toast('❌ ' + err.message); }
+        return;
+      }
+
+      const H = A.host;
+      if(H){ const acts = { begin:()=>H.start(), correct:()=>H.judge(true), wrong:()=>H.judge(false), reveal:()=>H.reveal(), reopen:()=>H.reopen(), next:()=>H.next(), var:()=>H.varReview(), undo:()=>H.undo(), finish:()=>H.finish(), yellow:()=>H.card(k,'yellow'), red:()=>H.card(k,'red') }; if(acts[act]) return acts[act](); }
+
+      const C = A.client;
+      if(C){ if(act === 'buzz') return C.send({ type:'BUZZ' }); if(act === 'captain') return C.send({ type:'CAPTAIN' }); if(act === 'freeze') return $('#freezePick')?.classList.toggle('hidden'); if(act === 'freezeGo') return (C.send({ type:'FREEZE', target:k }), $('#freezePick')?.classList.add('hidden')); if(act === 'mcq') return C.send({ type:'MCQ', optionId:b.dataset.id }); }
+
+      if(act === 'again'){ A.host?.start(); return go('#/host'); }
+
+      if(act === 'download') return download();
+      if(act === 'resetBank'){ await resetBank(); return manageScreen(); }
+      if(act === 'editQ') return manageScreen((await loadBank()).find(x=>x.id===b.dataset.id));
+      if(act === 'cancelEdit') return manageScreen();
+      if(act === 'delQ'){ remove(b.dataset.id); return manageScreen(); }
+      if(act === 'saveQ'){
+        const id = $('#q_id').value.trim(); if(!id) return toast('لازم ID 👈');
+        const word = $('#q_word').value.trim();
+        const q = { id, category:$('#q_cat').value, question:$('#q_text').value.trim(), difficulty:$('#q_diff').value, image:$('#q_img').value.trim() || undefined, reverse: $('#q_rev').value === '1', answer: $('#q_ans').value.trim() || word, ...(word ? { word } : {}) };
+        addOrEdit(q); return manageScreen();
+      }
+    });
+
+    document.addEventListener('change', async e => {
+      if(e.target.id !== 'upload') return;
+      try{ await upload(e.target.files[0]); toast('اترفع ✅'); manageScreen(); }
+      catch(err){ toast('❌ ' + err.message); }
+    });
+
+    (async () => {
+      await loadBank();
+      const saved = store.get(SESSION, null);
+      const urlCode = new URLSearchParams(location.search).get('room');
+      if(urlCode){ const i = $('#code'); if(i) i.value = urlCode.toUpperCase(); }
+
+      if(saved?.role && !location.hash.includes('manage')){
+        try{
+          A.session = saved; A.mode = saved.mode || 'referee';
+          A.net = new Net();
+          if(saved.role === 'host'){
+            const bank = await loadBank();
+            await A.net.host(saved.code);
+            A.host = new Host({ net:A.net, bank, settings:{ code:saved.code, rounds:12, timer:20, points:1, category:ALL }, mode:A.mode, hostPlayer:null, onState, onFx:playFx });
+          }else{
+            A.client = new Client(A.net, saved, { onState, onFx:playFx });
+            await A.net.join(saved.code, saved);
+          }
+          toast('رجّعنا جلستك القديمة 🔁');
+          return;
+        }catch(err){ console.warn(err); A.net=null; A.host=null; A.client=null; }
+      }
+      route();
+    })();
+    window.addEventListener('hashchange', route);
+  </script>
 </body>
 </html>
